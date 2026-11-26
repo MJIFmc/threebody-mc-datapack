@@ -1,8 +1,9 @@
 # Threebody 三体引力模拟数据包
 
-> Minecraft Java **1.21.3** 数据包（`pack_format = 57`）：用方块展示实体在游戏里模拟三体（n 体）无序运动。
+> Minecraft Java 数据包（多版本支持）：**1.20.1 / 1.21.1 / 1.21.3 / 1.21.11 / 26.3 / 26.4-pre-1**
+> 用方块展示实体在游戏里模拟三体（n 体）无序运动。
 >
-> 版本：**v2.1.0**
+> 版本：**v2.2.0**
 
 - 进游戏无任何变化，只有手动执行指令才会出现实体
 - 一条指令生成 1 个方块展示实体（默认黑色混凝土，初始速度朝玩家胸口）
@@ -18,19 +19,52 @@
 
 ---
 
+## 支持的 Minecraft 版本（下载哪个包）
+
+各版本的差异只在数据包元数据（pack_format）和个别实体/命令格式，玩法/物理参数完全一致。请下载与你游戏版本对应的 zip：
+
+| Minecraft 版本 | 文件（`dist/`） | 数据包格式 | 备注 |
+|---|---|---|---|
+| 1.20.1 | `threebody-1.20.1.zip` | `pack_format: 15` | 旧目录结构；**没有宏函数**，自定义参数改用 storage 预设接口（见下文 / [docs/README-1.20.1.md](docs/README-1.20.1.md)） |
+| 1.21.1 | `threebody-1.21.1.zip` | `pack_format: 48` | |
+| 1.21.3 | `threebody-1.21.3.zip` | `pack_format: 57` | |
+| 1.21.11 | `threebody-1.21.11.zip` | `min_format/max_format: 94` | 代码与 1.21.3 相同 |
+| 26.3 | `threebody-26.3.zip` | `min_format/max_format: 121` | 展示实体 `block_state` 新格式，已单独构建 |
+| 26.4-pre-1 | `threebody-26.4-pre-1.zip` | `min_format/max_format: 128` | 同上（快照版） |
+
+> 也可以在 GitHub **Releases** 页面按版本下载（`v2.2.0`）。`dist/SHA256SUMS.txt` 是各 zip 的校验和。
+> 其它 1.21.x/26.x 中间版本（如 1.21.4–1.21.10、26.1/26.2）未逐一测试，通常可用对应世代的构建（1.21.1–1.21.11 一份、26.3+ 一份），但请自行验证。
+
+### 1.20.1 的接口差异（重要）
+
+1.20.1 没有宏函数（`/function ns:f {args}` 是 1.20.2+ 才有），因此 `add_custom` / `add_<color>_custom` / `config` 改成**两步 storage 预设**：
+
+```mcfunction
+# 1.20.1：先 merge 参数，再调用函数
+data merge storage threebody:in {mass:3,speed:0.05}
+function threebody:add_red_custom
+
+# 清空预设参数（恢复默认）
+function threebody:params/reset
+```
+
+`add` / `add_<颜色>`（16 色）/ `stop` / `resume` / `clear` / `help` 在 1.20.1 与新版用法一致。详细说明见 [docs/README-1.20.1.md](docs/README-1.20.1.md)。
+
+---
+
 ## 安装
 
-> 需要 Minecraft **Java 1.21.3**（1.21.2 同数据包格式，未测试）。
+> 需要 Minecraft Java（按上表选对应版本）。**同一个世界只能启用一个版本的 threebody 包**。
 
 **方式 A：加进已有存档（推荐）**
 
-1. 解压或直接使用仓库里的 `dist/threebody.zip`；
+1. 解压或直接使用仓库里与你版本对应的 `dist/threebody-<版本>.zip`；
 2. 放进存档的 `datapacks` 文件夹：
    - Windows：`%APPDATA%\.minecraft\saves\<存档名>\datapacks\`
    - 本机示例：`F:\MC-environment\.minecraft\versions\1.21.3-Fabric\saves\<存档名>\datapacks\`
 3. 进游戏后执行 `/reload`（或退出重进世界）。
 
-**方式 B：新建世界时启用**：把 `dist/threebody.zip` 放进游戏目录的 `datapacks` 文件夹（没有就新建），创建新世界 → 更多 → 数据包 → 启用；也可以直接把 zip 拖进那个界面。
+**方式 B：新建世界时启用**：把对应的 zip 放进游戏目录的 `datapacks` 文件夹（没有就新建），创建新世界 → 更多 → 数据包 → 启用；也可以直接把 zip 拖进那个界面。
 
 **方式 C：服务器**：把 zip 放进 `<服务器目录>/world/datapacks/`，控制台执行 `/reload`。
 
@@ -234,40 +268,42 @@ Minecraft 只加载玩家附近的区块，飞远的实体在未加载区块里�
 
 ## 从源码构建
 
-仓库根目录就是数据包根目录（`pack.mcmeta` + `data/`）。
+仓库支持**多版本构建**：源码只有一份，`build.py` 按 `versions.json` 生成各版本 zip（自动处理 pack.mcmeta 格式、1.20.1 的复数目录、26.3+ 的展示实体 block_state 新格式等）。
 
 ```bash
-# Linux / macOS（需要 zip）
-./build.sh
-
-# Windows PowerShell
-powershell -ExecutionPolicy Bypass -File build.ps1
+python3 build.py                    # 构建全部版本 -> dist/
+python3 build.py --only 1.21.3      # 只构建一个版本
+python3 build.py --list             # 列出可构建版本
 ```
 
-产物：`dist/threebody.zip`。改完源码后把 zip 放回存档 `datapacks/`，游戏内 `/reload` 即可。
+- 需要 **Python 3**（Windows 可用 `python build.py`）。`build.sh` / `build.ps1` 是包装脚本。
+- 构建产物：`dist/threebody-<版本>.zip` + `dist/SHA256SUMS.txt`（zip 内固定时间戳，便于校验）。
+- `compat/1.20.1/` 是 1.20.1 专用源码（复数目录 + 无宏的两步 storage API）。
+- `overrides/<版本>/` 是某版本的少量文件覆盖（目前 26.3/26.4-pre-1 需要改两处 `block_state` 格式）。
 
-注意：`.mcfunction` 里普通命令行首不要写 `$`（`$` 行是宏，必须包含 `$(...)`）；提前退出函数要写 `return 0`（1.21.3 没有裸 `return`）。
+注意：`.mcfunction` 里普通命令行首不要写 `$`（`$` 行是宏，必须包含 `$(...)`）；提前退出函数要写 `return 0`（1.20.1 也支持；但 1.20.1 源码里用嵌套 execute 拆分子函数实现，不依赖 return）。
 
 ---
 
 ## 目录结构
 
 ```
-threebody/                    ← 数据包根目录（也是 git 仓库根）
-├─ pack.mcmeta
-├─ data/minecraft/tags/function/{load,tick}.json
-├─ data/threebody/function/   ← 54 个函数（入口 / 16×颜色快捷 / core / phys）
-├─ dist/threebody.zip         ← 构建产物
+threebody/                    ← git 仓库根
+├─ pack.mcmeta                ← 默认（1.21.3）源码的元数据，构建时按版本重写
+├─ data/threebody/function/   ← 现代版本（1.21.1–26.4）源码：54 个函数
+├─ compat/1.20.1/             ← 1.20.1 专用源码（复数目录、storage 预设 API）
+├─ overrides/                 ← 个别版本的少量文件覆盖（26.3/26.4-pre-1 的 block_state）
+├─ versions.json              ← 版本 → pack 元数据/源码/布局 的构建矩阵
+├─ build.py / build.sh / build.ps1
+├─ dist/                      ← 各版本 zip + SHA256SUMS
 ├─ docs/preview/              ← 物理轨迹预览图
-├─ build.sh / build.ps1
+├─ docs/README-1.20.1.md      ← 1.20.1 版专用说明
 ├─ README.md
-├─ 技术说明.md                 ← 实现原理、定点数学、验证记录
+├─ 技术说明.md                 ← 实现原理、定点数学、多版本构建、验证记录
 └─ CHANGELOG.md
 ```
 
 实现细节（定点数学、引力公式、验证记录、性能）见 [技术说明.md](技术说明.md)。
-
----
 
 ## 版本历史
 

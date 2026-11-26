@@ -1,8 +1,7 @@
-# 构建数据包 zip： dist\threebody.zip
+# 多版本构建：python build.py [--only 1.21.3 ...]
 $ErrorActionPreference = "Stop"
 Set-Location $PSScriptRoot
-New-Item -ItemType Directory -Force -Path dist | Out-Null
-$zip = Join-Path (Get-Location) "dist\threebody.zip"
-if (Test-Path $zip) { Remove-Item $zip }
-Compress-Archive -Path pack.mcmeta, data -DestinationPath $zip
-Write-Host "built $zip"
+$py = Get-Command python3 -ErrorAction SilentlyContinue
+if (-not $py) { $py = Get-Command python -ErrorAction SilentlyContinue }
+if (-not $py) { Write-Error "需要 Python 3 来构建多版本 zip；也可直接使用仓库 dist/ 下的现成 zip。"; exit 1 }
+& $py.Source build.py @args

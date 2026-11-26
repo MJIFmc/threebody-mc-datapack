@@ -1,0 +1,12 @@
+{
+  "pack": "threebody",
+  "description": "Threebody Gravity 三体引力模拟",
+  "targets": {
+    "1.20.1":      { "source": "compat/1.20.1", "pack": { "pack_format": 15 }, "layout": "plural" },
+    "1.21.1":      { "pack": { "pack_format": 48 } },
+    "1.21.3":      { "pack": { "pack_format": 57 } },
+    "1.21.11":     { "pack": { "min_format": 94,  "max_format": 94 } },
+    "26.3":        { "pack": { "min_format": 121, "max_format": 121 } },
+    "26.4-pre-1":  { "pack": { "min_format": 128, "max_format": 128 } }
+  }
+}

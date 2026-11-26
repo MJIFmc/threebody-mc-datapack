@@ -1,5 +1,14 @@
 # Changelog
 
+## v2.2.0 — 2026-11-26
+
+- **新增多版本支持**：同一套源码构建 6 个 MC 版本 —— 1.20.1 / 1.21.1 / 1.21.3 / 1.21.11 / 26.3 / 26.4-pre-1；`dist/` 下每版本一个 zip，GitHub Release v2.2.0 附带全部版本。
+- **1.20.1**：新增 `compat/1.20.1/` 专用源码（复数目录 `functions/`）；因 1.20.1 无宏函数，`add_custom` / `add_<颜色>_custom` / `config` 改为 **storage 预设两步接口**（`data merge storage threebody:in {...}` → `function threebody:add_custom`），新增 `threebody:params/reset`；1.20.1 无 `teleport_duration`（仅影响客户端插值）。物理与 1.21.3 **逐位一致**（default3 / explicit3 / two_body 三个场景各 600 tick 6/6 快照 0 差异）。说明见 `docs/README-1.20.1.md`。
+- **1.21.11**：内容与 1.21.3 相同，仅 `pack.mcmeta` 改为 `min_format/max_format: 94`。
+- **26.3 / 26.4-pre-1**：展示实体 `block_state` 改为新格式（方块 id 字符串 / `{id:...}`），通过 `overrides/` 改两处（`core/summon_here`、`core/init`）适配；其余命令/NBT 兼容。
+- **构建系统**：新增 `versions.json` + `build.py` 多版本构建（自动写 pack.mcmeta、处理 1.20.1 复数目录、合并 overrides、生成确定性 zip + `SHA256SUMS.txt`）；`build.sh` / `build.ps1` 改为包装脚本；GitHub Actions 更新为构建全部版本。
+- 文档更新：README 增加版本支持/下载矩阵与 1.20.1 差异说明；技术说明增加多版本构建与验证记录。
+
 ## v2.1.0 — 2026-11-26
 
 - **默认初始速度改为 0（静止）**：所有方块生成后静止悬空；总动量为零，系统整体不再漂移（之前默认速度 3/64 在非三体对称场景/自定义数量下会带来总动量，可能越飞越远）。

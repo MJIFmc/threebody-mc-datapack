@@ -1,20 +1,12 @@
 #!/usr/bin/env bash
-# 构建数据包 zip： dist/threebody.zip
+# 多版本构建：python3 build.py [--only 1.21.3 ...]
 set -euo pipefail
 cd "$(dirname "$0")"
-mkdir -p dist
-rm -f dist/threebody.zip
-if command -v zip >/dev/null 2>&1; then
-  zip -qr dist/threebody.zip pack.mcmeta data
+if command -v python3 >/dev/null 2>&1; then
+  exec python3 build.py "$@"
+elif command -v python >/dev/null 2>&1; then
+  exec python build.py "$@"
 else
-  python3 - <<'PY'
-import zipfile, os
-with zipfile.ZipFile("dist/threebody.zip", "w", zipfile.ZIP_DEFLATED) as z:
-    for root, dirs, files in os.walk("data"):
-        for f in files:
-            p = os.path.join(root, f)
-            z.write(p, os.path.relpath(p, "."))
-    z.write("pack.mcmeta", "pack.mcmeta")
-PY
+  echo "需要 Python 3 来构建多版本 zip；也可直接使用仓库 dist/ 下的现成 zip。" >&2
+  exit 1
 fi
-echo "built dist/threebody.zip"

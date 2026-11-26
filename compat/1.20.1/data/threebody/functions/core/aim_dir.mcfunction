@@ -1,0 +1,22 @@
+function threebody:phys/isqrt
+scoreboard players operation #u threebody_tmp = #dx threebody_tmp
+scoreboard players operation #u threebody_tmp *= #s1024 threebody_c
+scoreboard players operation #u threebody_tmp /= #r threebody_tmp
+scoreboard players operation #w threebody_tmp = #u threebody_tmp
+scoreboard players operation #w threebody_tmp *= #spd threebody_tmp
+scoreboard players operation #w threebody_tmp /= #s1024 threebody_c
+scoreboard players operation @s threebody_vx = #w threebody_tmp
+scoreboard players operation #u threebody_tmp = #dy threebody_tmp
+scoreboard players operation #u threebody_tmp *= #s1024 threebody_c
+scoreboard players operation #u threebody_tmp /= #r threebody_tmp
+scoreboard players operation #w threebody_tmp = #u threebody_tmp
+scoreboard players operation #w threebody_tmp *= #spd threebody_tmp
+scoreboard players operation #w threebody_tmp /= #s1024 threebody_c
+scoreboard players operation @s threebody_vy = #w threebody_tmp
+scoreboard players operation #u threebody_tmp = #dz threebody_tmp
+scoreboard players operation #u threebody_tmp *= #s1024 threebody_c
+scoreboard players operation #u threebody_tmp /= #r threebody_tmp
+scoreboard players operation #w threebody_tmp = #u threebody_tmp
+scoreboard players operation #w threebody_tmp *= #spd threebody_tmp
+scoreboard players operation #w threebody_tmp /= #s1024 threebody_c
+scoreboard players operation @s threebody_vz = #w threebody_tmp
