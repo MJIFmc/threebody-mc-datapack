@@ -1,0 +1,26 @@
+# 输入: #dx,#dy,#dz (位置差), #r2 (平方和, 已含 soft2)
+# 输出: #r = 整数平方根 (#r 至少为软化的 softr)
+# 初始估计用 L1 范数: x0 = 2/3 * (|dx|+|dy|+|dz|), 与真实值误差 < 20%
+scoreboard players operation #s threebody_tmp = #dx threebody_tmp
+execute if score #s threebody_tmp matches ..-1 run scoreboard players operation #s threebody_tmp *= #neg1 threebody_c
+scoreboard players operation #q threebody_tmp = #dy threebody_tmp
+execute if score #q threebody_tmp matches ..-1 run scoreboard players operation #q threebody_tmp *= #neg1 threebody_c
+scoreboard players operation #s threebody_tmp += #q threebody_tmp
+scoreboard players operation #q threebody_tmp = #dz threebody_tmp
+execute if score #q threebody_tmp matches ..-1 run scoreboard players operation #q threebody_tmp *= #neg1 threebody_c
+scoreboard players operation #s threebody_tmp += #q threebody_tmp
+scoreboard players operation #r threebody_tmp = #s threebody_tmp
+scoreboard players operation #r threebody_tmp *= #two threebody_c
+scoreboard players operation #r threebody_tmp /= #three threebody_c
+execute if score #r threebody_tmp < #softr threebody_c run scoreboard players operation #r threebody_tmp = #softr threebody_c
+# 牛顿迭代 2 次: r = (r + r2/r)/2
+scoreboard players operation #q threebody_tmp = #r2 threebody_tmp
+scoreboard players operation #q threebody_tmp /= #r threebody_tmp
+scoreboard players operation #q threebody_tmp += #r threebody_tmp
+scoreboard players operation #q threebody_tmp /= #two threebody_c
+scoreboard players operation #r threebody_tmp = #q threebody_tmp
+scoreboard players operation #q threebody_tmp = #r2 threebody_tmp
+scoreboard players operation #q threebody_tmp /= #r threebody_tmp
+scoreboard players operation #q threebody_tmp += #r threebody_tmp
+scoreboard players operation #q threebody_tmp /= #two threebody_c
+scoreboard players operation #r threebody_tmp = #q threebody_tmp
