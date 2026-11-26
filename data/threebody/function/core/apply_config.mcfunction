@@ -13,7 +13,7 @@ scoreboard players operation #soft2 threebody_c = #softr threebody_c
 scoreboard players operation #soft2 threebody_c *= #softr threebody_c
 # 默认初速(定点)与默认质量
 execute store result score #speed threebody_c run data get storage threebody:cfg speed 1048576
-execute if score #speed threebody_c matches ..0 run scoreboard players set #speed threebody_c 1
+execute if score #speed threebody_c matches ..-1 run scoreboard players set #speed threebody_c 0
 execute if score #speed threebody_c matches 2097153.. run scoreboard players set #speed threebody_c 2097152
 execute store result score #mass threebody_c run data get storage threebody:cfg mass 1
 execute if score #mass threebody_c matches ..0 run scoreboard players set #mass threebody_c 1

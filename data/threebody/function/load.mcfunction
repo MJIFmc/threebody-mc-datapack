@@ -30,5 +30,8 @@ scoreboard players set #s1024 threebody_c 1024
 scoreboard players set #s4096 threebody_c 4096
 scoreboard players set #vmax threebody_c 1073741824
 # 默认配置(可通过 /function threebody:config {args:{...}} 修改)
-execute unless data storage threebody:cfg g run data merge storage threebody:cfg {g:0.0625d,soft:1.5d,speed:0.046875d,mass:1}
+# 默认初始速度 = 0(静止): 总动量为零, 系统整体不会漂移
+execute unless data storage threebody:cfg g run data merge storage threebody:cfg {g:0.0625d,soft:1.5d,speed:0.0d,mass:1}
+# v2.1.0 迁移: 旧版默认配置(未改过任何参数)的 speed 从 0.046875 改为 0
+execute if data storage threebody:cfg {g:0.0625d,soft:1.5d,speed:0.046875d,mass:1} run data modify storage threebody:cfg speed set value 0.0d
 function threebody:core/apply_config
